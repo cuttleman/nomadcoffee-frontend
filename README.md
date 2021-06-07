@@ -16,3 +16,16 @@ Task
 ▫ Set up styled-components ✅
 ▫ Set up reactive variables on Apollo Client to enable dark mode and authentication ✅
 ```
+
+<br>
+
+## _Week 7_
+
+```
+Task
+
+In our Nomad Coffee the coffee shop owner will have a web admin panel.
+
+▫ Implement sign up and login! ✅
+▫ Log in / Sign up notification
+```

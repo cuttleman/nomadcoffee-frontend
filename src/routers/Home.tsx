@@ -1,4 +1,4 @@
-import { darkModeVar, isLoggedInVar } from "../apollo";
+import { logout } from "../apollo";
 import styled from "styled-components";
 
 const TextContainer = styled.div`
@@ -8,8 +8,8 @@ const TextContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  color: ${(props) => props.theme.fontColor};
-  background-color: ${(props) => props.theme.bgColor};
+  color: ${(props) => props.theme.mainFontColor};
+  background-color: ${(props) => props.theme.mainFontColor};
   margin-bottom: 10px;
   transition: all 0.3s linear;
 `;
@@ -18,9 +18,7 @@ const Home: React.FC = () => {
   return (
     <div>
       <TextContainer>Home</TextContainer>
-      <button onClick={() => isLoggedInVar(false)}>log out</button>
-      <button onClick={() => darkModeVar(true)}>Dark Theme</button>
-      <button onClick={() => darkModeVar(false)}>Light Theme</button>
+      <button onClick={logout}>log out</button>
     </div>
   );
 };
