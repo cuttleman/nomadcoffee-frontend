@@ -1,8 +1,15 @@
 import { ApolloClient, InMemoryCache, makeVar } from "@apollo/client";
+import createUploadLink from "apollo-upload-client/public/createUploadLink";
 
-export const client = new ApolloClient({
-  uri: "http://localhost:4000/graphql",
+export const client: any = new ApolloClient({
+  // uri: "http://localhost:4000/graphql",
+  link: createUploadLink({
+    uri: "http://localhost:4000/graphql",
+  }),
   cache: new InMemoryCache(),
+  headers: {
+    token: localStorage.getItem("token") || "",
+  },
 });
 
 export const isLoggedInVar = makeVar(false);

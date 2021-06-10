@@ -31,6 +31,49 @@ declare module "types" {
       name?: string;
       location?: string;
     }
+    interface Add {
+      name: string;
+      latitude?: string;
+      longitude?: string;
+      photos: any[];
+      result?: boolean;
+    }
+  }
+
+  namespace Api {
+    interface User {
+      id: string;
+      username: string;
+      email: string;
+      name?: string;
+      location?: string;
+      avatarUrl?: string;
+      githubUsername?: string;
+      isFollowing: boolean;
+      isSelf: boolean;
+      coffeeShops: CoffeeShop[];
+    }
+    interface CoffeeShopPhoto {
+      id: string;
+      url: string;
+      shop: CoffeeShop;
+    }
+    interface CoffeeShop {
+      id: string;
+      name: string;
+      latitude?: string;
+      longitude?: string;
+      user: User;
+      photos: CoffeeShopPhoto[];
+      categories: Category[];
+    }
+    interface Category {
+      id: string;
+      name: string;
+      slug: string;
+      shops: CoffeeShop[];
+      totalShops: number;
+    }
   }
 
   interface StyledType {

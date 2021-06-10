@@ -29,3 +29,16 @@ In our Nomad Coffee the coffee shop owner will have a web admin panel.
 ▫ Implement sign up and login! ✅
 ▫ Log in / Sign up notification
 ```
+
+<br>
+
+## _Week 8_
+
+```
+Task
+
+Make a CRUD of Coffee Shops.
+▫ /: show the user all the coffee shops that they have created. ✅
+▫ /add: show the user a form to create a shop. 💥
+▫ /shop/:id: show the user a form to edit a shop, or a button to delete the shop.
+```

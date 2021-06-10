@@ -4,8 +4,11 @@ import coffeeImg from "../assets/coffee.png";
 import LogIn from "../components/LogIn";
 import SignUp from "../components/SignUp";
 import PageTitle from "../components/PageTitle";
+import ToggleMode from "../components/ToggleMode";
 
 const Container = styled.main`
+  position: absolute;
+  z-index: 999;
   width: 100%;
   display: flex;
   align-items: center;
@@ -64,6 +67,7 @@ const Auth: React.FC = () => {
   const toggleAuthPage = () => setIsSignUp((prev) => !prev);
   return (
     <Container>
+      <ToggleMode />
       <PageTitle title={isSignUp ? "Sign Up" : "Log In"} />
       <ImageContent>
         <Coffee src={coffeeImg} alt="main_coffee" />

@@ -1,25 +1,50 @@
-import { logout } from "../apollo";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useQuery } from "@apollo/client";
+import Shop from "../components/Shop";
+import { SEE_COFFEE_SHOPS } from "../queries";
+import { logout } from "../apollo";
+import { Api } from "types";
 
-const TextContainer = styled.div`
-  width: 300px;
-  height: 200px;
-  border-radius: 10px;
+const Container = styled.main`
+  width: 100%;
+`;
+
+const ShopsContainer = styled.section`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-items: center;
   align-items: center;
-  color: ${(props) => props.theme.mainFontColor};
-  background-color: ${(props) => props.theme.mainFontColor};
-  margin-bottom: 10px;
-  transition: all 0.3s linear;
 `;
 
 const Home: React.FC = () => {
-  return (
-    <div>
-      <TextContainer>Home</TextContainer>
+  const [pageNum, setPageNum] = useState(1);
+  const {
+    data,
+    loading,
+  }: {
+    data?: {
+      seeCoffeeShops: {
+        result: boolean;
+        error: string;
+        shops: Api.CoffeeShop[];
+      };
+    };
+    loading: boolean;
+  } = useQuery(SEE_COFFEE_SHOPS, {
+    variables: { pageNum },
+  });
+
+  return loading ? null : (
+    <Container>
       <button onClick={logout}>log out</button>
-    </div>
+      <ShopsContainer>
+        {data?.seeCoffeeShops?.result &&
+          data?.seeCoffeeShops?.shops.map((shop: Api.CoffeeShop) => (
+            <Shop key={shop.id} {...shop} />
+          ))}
+      </ShopsContainer>
+    </Container>
   );
 };
 

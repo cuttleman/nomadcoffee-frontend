@@ -3,7 +3,11 @@ import reset from "styled-reset";
 
 export const GlobalStyle = createGlobalStyle`
   ${reset}
-  html,body{
+  html{
+    width: 100%;
+    height: 100%;
+  }
+  body{
     width: 100%;
     height: 100%;
     font-size: 16px;
@@ -17,6 +21,9 @@ export const GlobalStyle = createGlobalStyle`
     color: ${(props) => props.theme.defaultColor};
     box-sizing: border-box;
   }
+  a{
+    text-decoration: none;
+  }
   button{
     outline: none;
     cursor: pointer;
@@ -29,6 +36,7 @@ export const darkTheme: DefaultTheme = {
   mainBtnColor: "#1e90ff",
   mainBgColor: "#353b48",
   defaultColor: "white",
+  shopCardColor: "#1e272e",
 };
 
 export const lightTheme: DefaultTheme = {
@@ -37,4 +45,5 @@ export const lightTheme: DefaultTheme = {
   mainBtnColor: "#ff6b6b",
   mainBgColor: "#ffffff",
   defaultColor: "black",
+  shopCardColor: "#f1f2f6",
 };
