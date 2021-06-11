@@ -55,18 +55,65 @@ export const SEE_COFFEE_SHOPS = gql`
   }
 `;
 
+export const SEE_COFFEE_SHOP = gql`
+  query seeCoffeeShop($id: String!) {
+    seeCoffeeShop(id: $id) {
+      result
+      error
+      shop {
+        id
+        name
+        latitude
+        longitude
+        photos {
+          id
+          url
+        }
+        categories {
+          id
+          name
+          slug
+        }
+      }
+    }
+  }
+`;
+
 export const CREATE_COFFEE_SHOP = gql`
   mutation createCoffeeShop(
     $name: String!
     $latitude: String
     $longitude: String
+    $categories: [String]
     $photos: [Upload]
   ) {
     createCoffeeShop(
       name: $name
       latitude: $latitude
       longitude: $longitude
+      categories: $categories
       photos: $photos
+    ) {
+      result
+      error
+    }
+  }
+`;
+
+export const EDIT_COFFEE_SHOP = gql`
+  mutation editCoffeeShop(
+    $name: String!
+    $latitude: String
+    $longitude: String
+    $photos: [Upload]
+    $categories: [String]
+  ) {
+    editCoffeeShop(
+      name: $name
+      latitude: $latitude
+      longitude: $longitude
+      photos: $photos
+      categories: $categories
     ) {
       result
       error

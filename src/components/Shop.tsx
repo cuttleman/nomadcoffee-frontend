@@ -70,6 +70,16 @@ const Title = styled.span`
   font-weight: 600;
 `;
 
+const Categories = styled.div``;
+const Category = styled.span`
+  padding: 6px;
+  border-radius: 5px;
+  background-color: ${(props) => props.theme.mainColor};
+  color: ${(props) => props.theme.defaultColor};
+  margin-right: 10px;
+  font-weight: 500;
+`;
+
 const Map = styled.div`
   width: 70%;
   height: 40%;
@@ -86,6 +96,7 @@ const Shop: React.FC<Api.CoffeeShop> = ({
   latitude,
   longitude,
   photos,
+  categories,
 }) => {
   return (
     <Container>
@@ -96,6 +107,12 @@ const Shop: React.FC<Api.CoffeeShop> = ({
         <Content>
           <ItemContainer>
             <Title>{name}</Title>
+            <Categories>
+              {categories.length > 0 &&
+                categories.map((category) => (
+                  <Category key={category.id}>{category.name}</Category>
+                ))}
+            </Categories>
             <Map>google map</Map>
           </ItemContainer>
         </Content>

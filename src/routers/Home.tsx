@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+// import { useState } from "react";
 import styled from "styled-components";
 import { useQuery } from "@apollo/client";
 import Shop from "../components/Shop";
@@ -18,7 +18,7 @@ const ShopsContainer = styled.section`
 `;
 
 const Home: React.FC = () => {
-  const [pageNum, setPageNum] = useState(1);
+  // const [pageNum, setPageNum] = useState(1);
   const {
     data,
     loading,
@@ -32,8 +32,10 @@ const Home: React.FC = () => {
     };
     loading: boolean;
   } = useQuery(SEE_COFFEE_SHOPS, {
-    variables: { pageNum },
+    variables: { pageNum: 1 },
   });
+
+  // Infinite scroll implementation
 
   return loading ? null : (
     <Container>

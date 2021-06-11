@@ -39,6 +39,16 @@ Task
 
 Make a CRUD of Coffee Shops.
 ▫ /: show the user all the coffee shops that they have created. ✅
-▫ /add: show the user a form to create a shop. 💥
+▫ /add: show the user a form to create a shop. ✅
 ▫ /shop/:id: show the user a form to edit a shop, or a button to delete the shop.
+```
+
+<br>
+
+## _Week 9_
+
+```
+Task
+
+▫ Deploy to Netlify ✅
 ```

@@ -36,6 +36,7 @@ declare module "types" {
       latitude?: string;
       longitude?: string;
       photos: any[];
+      categories: string[];
       result?: boolean;
     }
   }

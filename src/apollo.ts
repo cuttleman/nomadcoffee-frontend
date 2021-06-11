@@ -5,11 +5,11 @@ export const client: any = new ApolloClient({
   // uri: "http://localhost:4000/graphql",
   link: createUploadLink({
     uri: "http://localhost:4000/graphql",
+    headers: {
+      token: localStorage.getItem("token") || "",
+    },
   }),
   cache: new InMemoryCache(),
-  headers: {
-    token: localStorage.getItem("token") || "",
-  },
 });
 
 export const isLoggedInVar = makeVar(false);

@@ -1,12 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { FileDrop } from "react-file-drop";
 import styled from "styled-components";
 import SubmitBtn from "../components/SubmitBtn";
 import { useForm } from "react-hook-form";
 import { FormProps } from "types";
-import { watch } from "fs";
 import { useMutation } from "@apollo/client";
 import { CREATE_COFFEE_SHOP } from "../queries";
 import { useHistory } from "react-router";
@@ -38,13 +37,14 @@ const Input = styled.input`
   border-radius: 10px;
   border: none;
   outline: none;
-  margin: 10px;
   font-size: 1.3rem;
+  margin: 10px 0;
   background-color: ${(props) => props.theme.shopCardColor};
   &::placeholder {
     color: #a5b1c2;
   }
 `;
+
 const FileInput = styled.input`
   display: none;
 `;
@@ -56,6 +56,41 @@ const IconContainer = styled.div`
   align-items: center;
 `;
 
+const CategoriesContainer = styled.div`
+  width: 100%;
+  margin: 10px 0;
+  border-radius: 10px;
+  padding: 0 15px;
+  background-color: ${(props) => props.theme.shopCardColor};
+  display: flex;
+  align-items: center;
+`;
+
+const CategoriesInput = styled(Input)`
+  margin: 0;
+  padding: 15px 0;
+`;
+
+const CategoryPreview = styled.span`
+  padding: 6px;
+  background-color: ${(props) => props.theme.mainColor};
+  border-radius: 5px;
+  margin-right: 10px;
+  display: flex;
+  color: ${(props) => props.theme.defaultColor};
+  align-items: center;
+`;
+
+const CategoryDelete = styled.button`
+  background-color: transparent;
+  color: red;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0;
+  padding-left: 5px;
+`;
+
 const Icon = styled(FontAwesomeIcon)`
   & path {
     color: ${(props) => props.theme.mainColor};
@@ -64,6 +99,9 @@ const Icon = styled(FontAwesomeIcon)`
 
 const Add: React.FC = () => {
   const fileInputRef = useRef<any>(null);
+  const catergoriesRef = useRef<any>(null);
+  const [categoriesText, setCategoriesText] = useState<string>("");
+  const [categories, setCategories] = useState<string[]>([]);
   const history = useHistory();
   const {
     register,
@@ -71,7 +109,7 @@ const Add: React.FC = () => {
     getValues,
     setValue,
     setError,
-    formState: { isValid, errors },
+    formState: { isValid },
   } = useForm<FormProps.Add>({
     mode: "onChange",
   });
@@ -80,7 +118,6 @@ const Add: React.FC = () => {
     const {
       createCoffeeShop: { result, error },
     } = data;
-    console.log(data);
     if (!result) {
       setError("result", { message: error });
     } else {
@@ -92,9 +129,34 @@ const Add: React.FC = () => {
     onCompleted,
   });
 
+  const onCategoriesChange = (event: any) => {
+    if (event.target.value !== " ") {
+      setCategoriesText(event.target.value);
+    }
+  };
+
+  const onCategoriesKeyDown = (event: any) => {
+    if (event.code === "Space") {
+      if (categoriesText !== "") {
+        setCategories((prev) => [...prev, categoriesText]);
+        setCategoriesText("");
+      }
+    }
+  };
+
+  const onDeleteCategory = (event: any) => {
+    const {
+      parentElement: {
+        firstChild: { data: target },
+      },
+    } = event.target;
+    const newCategories = categories.filter((category) => category !== target);
+    setCategories(newCategories);
+  };
+
   const onFileInputChange = (event: any) => {
     const { files } = event.target;
-    setValue("photos", [...files], { shouldValidate: true });
+    setValue("photos", files, { shouldValidate: true });
   };
 
   const onTargetClick = () => {
@@ -107,7 +169,7 @@ const Add: React.FC = () => {
     }
     const { name, latitude, longitude, photos } = getValues();
     newShopMutation({
-      variables: { name, latitude, longitude, photos },
+      variables: { name, latitude, longitude, photos, categories },
     });
   };
 
@@ -149,7 +211,25 @@ const Add: React.FC = () => {
           type="text"
           placeholder="longitude"
         />
-        <SubmitBtn text="Register" />
+        <CategoriesContainer>
+          {categories.length > 0 &&
+            categories.map((category: string, idx: number) => (
+              <CategoryPreview key={idx}>
+                {category}
+                <CategoryDelete onClick={onDeleteCategory}>x</CategoryDelete>
+              </CategoryPreview>
+            ))}
+          <CategoriesInput
+            ref={catergoriesRef}
+            name="categories"
+            type="text"
+            placeholder="categories"
+            value={categoriesText}
+            onChange={onCategoriesChange}
+            onKeyDown={onCategoriesKeyDown}
+          />
+        </CategoriesContainer>
+        <SubmitBtn hasError={!isValid} text="Register" />
       </Form>
     </Container>
   );
