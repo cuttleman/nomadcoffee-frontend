@@ -56,7 +56,7 @@ const Content = styled.div`
 `;
 
 const ItemContainer = styled.div`
-  padding-left: 16%;
+  padding-left: 20%;
   width: 100%;
   height: 100%;
   display: flex;

@@ -19,6 +19,14 @@ declare module "types" {
     interface AuthPage {
       toggleAuthPage: React.Dispatch<React.SetStateAction<boolean>>;
     }
+    interface MutationShop {
+      type: "add" | "edit";
+      initName?: string;
+      initLatitude?: string;
+      initLongitude?: string;
+      initPhotos?: string[];
+      initCategories?: string[];
+    }
   }
   namespace FormProps {
     interface LogIn {
@@ -31,7 +39,7 @@ declare module "types" {
       name?: string;
       location?: string;
     }
-    interface Add {
+    interface MutationShop {
       name: string;
       latitude?: string;
       longitude?: string;
