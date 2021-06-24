@@ -22,6 +22,7 @@ const Edit: React.FC = () => {
       );
       setPreviousData({
         type: "edit",
+        id: params.id,
         initName: data?.seeCoffeeShop?.shop.name,
         initLatitude: data?.seeCoffeeShop?.shop.latitude,
         initLongitude: data?.seeCoffeeShop?.shop.longitude,
@@ -29,7 +30,7 @@ const Edit: React.FC = () => {
         initCategories: initCategories,
       });
     }
-  }, [data]);
+  }, [data, params]);
 
   return loading ? null : <MutationShop type="edit" {...previousData} />;
 };

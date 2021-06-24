@@ -102,19 +102,30 @@ export const CREATE_COFFEE_SHOP = gql`
 
 export const EDIT_COFFEE_SHOP = gql`
   mutation editCoffeeShop(
+    $id: String!
     $name: String!
     $latitude: String
     $longitude: String
-    $photos: [Upload]
-    $categories: [String]
+    $photos: [Upload!]
+    $categories: [String!]
   ) {
     editCoffeeShop(
+      id: $id
       name: $name
       latitude: $latitude
       longitude: $longitude
       photos: $photos
       categories: $categories
     ) {
+      result
+      error
+    }
+  }
+`;
+
+export const DELETE_COFFEE_SHOP = gql`
+  mutation deleteCoffeeShop($id: String!) {
+    deleteCoffeeShop(id: $id) {
       result
       error
     }

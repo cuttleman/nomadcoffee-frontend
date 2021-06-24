@@ -2,7 +2,8 @@ import styled from "styled-components";
 
 const Container = styled.div`
   min-height: 100vh;
-  padding: 80px 0;
+  padding-top: 90px;
+  padding-bottom: 80px;
   background-color: ${(props) => props.theme.mainBgColor};
 `;
 

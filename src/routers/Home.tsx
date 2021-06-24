@@ -33,6 +33,7 @@ const Home: React.FC = () => {
     loading: boolean;
   } = useQuery(SEE_COFFEE_SHOPS, {
     variables: { pageNum: 1 },
+    fetchPolicy: "network-only",
   });
 
   // Infinite scroll implementation

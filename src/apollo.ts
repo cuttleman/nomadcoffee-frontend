@@ -4,7 +4,7 @@ import createUploadLink from "apollo-upload-client/public/createUploadLink";
 export const client: any = new ApolloClient({
   // uri: "http://localhost:4000/graphql",
   link: createUploadLink({
-    uri: "http://localhost:4000/graphql",
+    uri: "https://coffee-server-nomad.herokuapp.com/graphql",
     headers: {
       token: localStorage.getItem("token") || "",
     },

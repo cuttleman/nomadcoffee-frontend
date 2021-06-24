@@ -7,35 +7,52 @@ import SubmitBtn from "../components/SubmitBtn";
 import { useForm } from "react-hook-form";
 import { FCProps, FormProps } from "types";
 import { useMutation } from "@apollo/client";
-import { CREATE_COFFEE_SHOP, EDIT_COFFEE_SHOP } from "../queries";
+import {
+  CREATE_COFFEE_SHOP,
+  DELETE_COFFEE_SHOP,
+  EDIT_COFFEE_SHOP,
+} from "../queries";
 import { useHistory } from "react-router";
 
 const Container = styled.main`
   width: 100%;
   display: flex;
-  justify-content: center;
 `;
 
 const Form = styled.form`
-  width: 30%;
+  width: ${window.innerWidth / 3}px;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
-const DropBox = styled.div`
+const Title = styled.span`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #a5b1c2;
+  font-size: 1.2rem;
+  font-weight: 600;
+`;
+
+const DropBox = styled.div<{ hasError: any }>`
   width: 100%;
   height: 400px;
-  border: 4px solid ${(props) => props.theme.mainColor};
+  border: 4px solid
+    ${(props) => (props.hasError ? "red" : props.theme.mainColor)};
   border-radius: 10px;
   background-color: transparent;
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ hasError?: string }>`
   width: 100%;
   padding: 15px;
   border-radius: 10px;
-  border: none;
+  border: 1px solid
+    ${(props) =>
+      props.hasError ? props.theme.mainBtnColor : props.theme.shopCardColor};
   outline: none;
   font-size: 1.3rem;
   margin: 10px 0;
@@ -43,6 +60,32 @@ const Input = styled.input`
   &::placeholder {
     color: #a5b1c2;
   }
+`;
+
+const PreviewsContainer = styled.div`
+  width: ${window.innerWidth / 3}px;
+  height: 50%;
+  background-color: ${(props) => props.theme.shopCardColor};
+  padding: 10px;
+  margin: 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 10px;
+`;
+
+const ImagePreview = styled.div<{ src: string }>`
+  width: ${window.innerWidth / 10}px;
+  height: ${window.innerWidth / 10}px;
+  overflow: hidden;
+  margin: 5px;
+  border-radius: 50%;
+  background-image: url(${(props) => props.src});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-clip: border-box;
+  background-origin: border-box;
+  background-color: ${(props) => props.theme.defaultColor};
 `;
 
 const FileInput = styled.input`
@@ -56,11 +99,13 @@ const IconContainer = styled.div`
   align-items: center;
 `;
 
-const CategoriesContainer = styled.div`
+const CategoriesContainer = styled.div<{ hasError?: any }>`
   width: 100%;
   margin: 10px 0;
   border-radius: 10px;
-  padding: 0 15px;
+  border: 1px solid
+    ${(props) =>
+      props.hasError ? props.theme.mainBtnColor : props.theme.shopCardColor};
   background-color: ${(props) => props.theme.shopCardColor};
   display: flex;
   align-items: center;
@@ -68,14 +113,13 @@ const CategoriesContainer = styled.div`
 
 const CategoriesInput = styled(Input)`
   margin: 0;
-  padding: 15px 0;
 `;
 
 const CategoryPreview = styled.span`
   padding: 6px;
   background-color: ${(props) => props.theme.mainColor};
   border-radius: 5px;
-  margin-right: 10px;
+  margin-left: 10px;
   display: flex;
   color: ${(props) => props.theme.defaultColor};
   align-items: center;
@@ -97,8 +141,27 @@ const Icon = styled(FontAwesomeIcon)`
   }
 `;
 
+const DeleteContainer = styled.div`
+  width: 30%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+`;
+const DeleteShop = styled.button`
+  padding: 10px 20px;
+  border: none;
+  border-radius: 7px;
+  font-size: 0.9rem;
+  background-color: #e84118;
+  opacity: 1;
+  &:active {
+    opacity: 0.4;
+  }
+`;
+
 const MutationShop: React.FC<FCProps.MutationShop> = ({
   type,
+  id,
   initName,
   initLatitude,
   initLongitude,
@@ -107,6 +170,9 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
 }) => {
   const fileInputRef = useRef<any>(null);
   const catergoriesRef = useRef<any>(null);
+  const [previews, setPreviews] = useState<Array<string | ArrayBuffer | null>>(
+    []
+  );
   const [categoriesText, setCategoriesText] = useState<string>("");
   const [categories, setCategories] = useState<string[]>([]);
   const history = useHistory();
@@ -116,11 +182,11 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
     getValues,
     setValue,
     setError,
-    formState: { isValid },
+    clearErrors,
+    formState: { isValid, errors },
   } = useForm<FormProps.MutationShop>({
     mode: "onChange",
   });
-  console.log(categories);
 
   const onCompleted = (data: any) => {
     const {
@@ -136,6 +202,21 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
     }
   };
 
+  const onDeleteComplete = (data: any) => {
+    const {
+      deleteCoffeeShop: { result, error },
+    } = data;
+    if (!result) {
+      setError("result", { message: error });
+    } else {
+      history.push("/");
+    }
+  };
+
+  const [deleteShopMutation] = useMutation(DELETE_COFFEE_SHOP, {
+    onCompleted: onDeleteComplete,
+  });
+
   const [newShopMutation, { loading }] = useMutation(
     type === "add" ? CREATE_COFFEE_SHOP : EDIT_COFFEE_SHOP,
     {
@@ -143,18 +224,48 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
     }
   );
 
+  const onDeleteShop = () => {
+    alert("Really Delete?");
+    // deleteShopMutation({
+    //   variables: {
+    //     id,
+    //   },
+    // });
+  };
+
+  const preventEnter = (event: any) => {
+    if (event.code === "Enter") {
+      event.preventDefault();
+    }
+  };
+
   const onCategoriesChange = (event: any) => {
-    if (event.target.value !== " ") {
+    if (event.target.value === " ") {
+      return;
+    } else if (categories.length >= 3) {
+      setError("categories", { message: "categories limited 3" });
+    } else {
+      clearErrors("categories");
       setCategoriesText(event.target.value);
     }
   };
 
   const onCategoriesKeyDown = (event: any) => {
+    clearErrors("categories");
     if (event.code === "Space") {
       if (categoriesText !== "") {
+        if (categories.includes(categoriesText)) {
+          setError("categories", { message: "already exist category" });
+          setCategoriesText("");
+          return;
+        }
+        clearErrors("categories");
         setCategories((prev) => [...prev, categoriesText]);
         setCategoriesText("");
       }
+    }
+    if (event.code === "Enter") {
+      event.preventDefault();
     }
   };
 
@@ -170,7 +281,22 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
 
   const onFileInputChange = (event: any) => {
     const { files } = event.target;
+    if (files.length > 6) {
+      setError("photos", { message: "Too much get to images, limited 6" });
+      setTimeout(() => clearErrors("photos"), 2000);
+      return;
+    }
     setValue("photos", files, { shouldValidate: true });
+    setPreviews([]);
+
+    [...files].forEach((file: any) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.addEventListener("load", () => {
+        const current = reader.result;
+        setPreviews((prev) => [...prev, current]);
+      });
+    });
   };
 
   const onTargetClick = () => {
@@ -183,7 +309,14 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
     }
     const { name, latitude, longitude, photos } = getValues();
     newShopMutation({
-      variables: { name, latitude, longitude, photos, categories },
+      variables: {
+        name,
+        latitude,
+        longitude,
+        photos,
+        categories,
+        ...(type === "edit" && id !== undefined && { id }),
+      },
     });
   };
 
@@ -193,10 +326,25 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
     }
   }, [initCategories]);
 
+  useEffect(() => {
+    if (initPhotos !== undefined && initPhotos.length > 0) {
+      setPreviews(initPhotos);
+    }
+  }, [initPhotos]);
+
   return (
     <Container>
+      <PreviewsContainer>
+        {previews.length > 0 ? (
+          previews.map((preview: any, idx: number) => (
+            <ImagePreview key={idx} src={preview} />
+          ))
+        ) : (
+          <Title>Preview Images</Title>
+        )}
+      </PreviewsContainer>
       <Form onSubmit={handleSubmit(onValid)}>
-        <DropBox>
+        <DropBox hasError={errors.photos}>
           <FileDrop onTargetClick={onTargetClick}>
             <IconContainer>
               <Icon icon={faUpload} size="4x" />
@@ -209,7 +357,6 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
           type="file"
           multiple
           formEncType="multipart/form-data"
-          defaultValue={initPhotos}
         />
         <Input
           {...register("name", {
@@ -218,29 +365,48 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
           type="text"
           placeholder="Coffee name"
           defaultValue={initName}
+          onKeyDown={preventEnter}
+          autoComplete="off"
+          hasError={errors.name?.message}
         />
         <Input
           {...register("latitude", {
             required: false,
+            pattern: {
+              value: /^[-]?[0-9]+\.?[0-9]+$/,
+              message: "please input type number",
+            },
           })}
           type="text"
           placeholder="latitude"
           defaultValue={initLatitude}
+          onKeyDown={preventEnter}
+          autoComplete="off"
+          hasError={errors.latitude?.message}
         />
         <Input
           {...register("longitude", {
             required: false,
+            pattern: {
+              value: /^[-]?[0-9]+\.?[0-9]+$/,
+              message: "please input type number",
+            },
           })}
           type="text"
           placeholder="longitude"
           defaultValue={initLongitude}
+          onKeyDown={preventEnter}
+          autoComplete="off"
+          hasError={errors.longitude?.message}
         />
-        <CategoriesContainer>
+        <CategoriesContainer hasError={errors.categories}>
           {categories.length > 0 &&
             categories.map((category: string, idx: number) => (
-              <CategoryPreview key={idx}>
+              <CategoryPreview key={category + idx}>
                 {category}
-                <CategoryDelete onClick={onDeleteCategory}>x</CategoryDelete>
+                <CategoryDelete onClick={onDeleteCategory} tabIndex={-1}>
+                  x
+                </CategoryDelete>
               </CategoryPreview>
             ))}
           <CategoriesInput
@@ -250,11 +416,15 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
             placeholder="categories"
             value={categoriesText}
             onChange={onCategoriesChange}
+            autoComplete="off"
             onKeyDown={onCategoriesKeyDown}
           />
         </CategoriesContainer>
         <SubmitBtn hasError={!isValid} text="Register" />
       </Form>
+      <DeleteContainer>
+        <DeleteShop onClick={onDeleteShop}>Delete</DeleteShop>
+      </DeleteContainer>
     </Container>
   );
 };

@@ -21,6 +21,7 @@ declare module "types" {
     }
     interface MutationShop {
       type: "add" | "edit";
+      id?: string;
       initName?: string;
       initLatitude?: string;
       initLongitude?: string;
