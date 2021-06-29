@@ -51,6 +51,8 @@ export const SEE_COFFEE_SHOPS = gql`
           slug
         }
       }
+      hasNext
+      pageNum
     }
   }
 `;
@@ -103,11 +105,11 @@ export const CREATE_COFFEE_SHOP = gql`
 export const EDIT_COFFEE_SHOP = gql`
   mutation editCoffeeShop(
     $id: String!
-    $name: String!
+    $name: String
     $latitude: String
     $longitude: String
-    $photos: [Upload!]
-    $categories: [String!]
+    $photos: [Upload]
+    $categories: [String]
   ) {
     editCoffeeShop(
       id: $id

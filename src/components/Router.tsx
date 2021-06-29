@@ -7,7 +7,6 @@ import Add from "../routers/Add";
 import Edit from "../routers/Edit";
 import Layout from "./Layout";
 import Header from "./Header";
-import Footer from "./Footer";
 
 const Router: React.FC = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
@@ -36,7 +35,6 @@ const Router: React.FC = () => {
         </Route>
         <Redirect path="*" to="/" />
       </Switch>
-      <Footer />
     </HashRouter>
   );
 };

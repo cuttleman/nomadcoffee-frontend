@@ -1,3 +1,4 @@
+import { ForwardedRef, forwardRef } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Api } from "types";
@@ -10,13 +11,13 @@ const PhotoBg = styled.div`
   border-radius: 50%;
 `;
 
-const Container = styled.div`
+const Container = styled.div<{ ref: ForwardedRef<HTMLDivElement> | null }>`
   width: 60%;
   height: 300px;
   position: relative;
   cursor: pointer;
   &:not(:last-child) {
-    margin-bottom: 20px;
+    margin-bottom: 100px;
   }
   &:hover ${PhotoBg} {
     opacity: 0.5;
@@ -90,35 +91,30 @@ const Map = styled.div`
   background-color: ${(props) => props.theme.mainBgColor};
 `;
 
-const Shop: React.FC<Api.CoffeeShop> = ({
-  id,
-  name,
-  latitude,
-  longitude,
-  photos,
-  categories,
-}) => {
-  return (
-    <Container>
-      <Link to={`/shop/${id}`}>
-        <Photo url={photos[0]?.url}>
-          <PhotoBg />
-        </Photo>
-        <Content>
-          <ItemContainer>
-            <Title>{name}</Title>
-            <Categories>
-              {categories.length > 0 &&
-                categories.map((category) => (
-                  <Category key={category.id}>{category.name}</Category>
-                ))}
-            </Categories>
-            <Map>google map</Map>
-          </ItemContainer>
-        </Content>
-      </Link>
-    </Container>
-  );
-};
+const Shop = forwardRef<HTMLDivElement, Api.CoffeeShop>(
+  ({ id, name, latitude, longitude, photos, categories }, ref) => {
+    return (
+      <Container ref={ref || null}>
+        <Link to={`/shop/${id}`}>
+          <Photo url={photos[0]?.url}>
+            <PhotoBg />
+          </Photo>
+          <Content>
+            <ItemContainer>
+              <Title>{name}</Title>
+              <Categories>
+                {categories.length > 0 &&
+                  categories.map((category) => (
+                    <Category key={category.id}>{category.name}</Category>
+                  ))}
+              </Categories>
+              <Map>google map</Map>
+            </ItemContainer>
+          </Content>
+        </Link>
+      </Container>
+    );
+  }
+);
 
 export default Shop;

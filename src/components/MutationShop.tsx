@@ -1,18 +1,20 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import { useHistory } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { FileDrop } from "react-file-drop";
 import styled from "styled-components";
-import SubmitBtn from "../components/SubmitBtn";
 import { useForm } from "react-hook-form";
-import { FCProps, FormProps } from "types";
 import { useMutation } from "@apollo/client";
 import {
   CREATE_COFFEE_SHOP,
   DELETE_COFFEE_SHOP,
   EDIT_COFFEE_SHOP,
+  SEE_COFFEE_SHOPS,
 } from "../queries";
-import { useHistory } from "react-router";
+import SubmitBtn from "../components/SubmitBtn";
+import ErrorValidation from "../components/ErrorValidation";
+import { FCProps, FormProps } from "types";
 
 const Container = styled.main`
   width: 100%;
@@ -20,7 +22,7 @@ const Container = styled.main`
 `;
 
 const Form = styled.form`
-  width: ${window.innerWidth / 3}px;
+  width: 33%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -63,7 +65,7 @@ const Input = styled.input<{ hasError?: string }>`
 `;
 
 const PreviewsContainer = styled.div`
-  width: ${window.innerWidth / 3}px;
+  width: 33%;
   height: 50%;
   background-color: ${(props) => props.theme.shopCardColor};
   padding: 10px;
@@ -215,22 +217,27 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
 
   const [deleteShopMutation] = useMutation(DELETE_COFFEE_SHOP, {
     onCompleted: onDeleteComplete,
+    refetchQueries: [{ query: SEE_COFFEE_SHOPS, variables: { pageNum: 1 } }],
   });
 
   const [newShopMutation, { loading }] = useMutation(
     type === "add" ? CREATE_COFFEE_SHOP : EDIT_COFFEE_SHOP,
     {
       onCompleted,
+      refetchQueries: [{ query: SEE_COFFEE_SHOPS, variables: { pageNum: 1 } }],
     }
   );
 
   const onDeleteShop = () => {
-    alert("Really Delete?");
-    // deleteShopMutation({
-    //   variables: {
-    //     id,
-    //   },
-    // });
+    // eslint-disable-next-line no-restricted-globals
+    const result = confirm("Really Delete?");
+    if (result) {
+      deleteShopMutation({
+        variables: {
+          id,
+        },
+      });
+    }
   };
 
   const preventEnter = (event: any) => {
@@ -243,23 +250,21 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
     if (event.target.value === " ") {
       return;
     } else if (categories.length >= 3) {
-      setError("categories", { message: "categories limited 3" });
+      setError("categories.0", { message: "categories limited 3" });
     } else {
-      clearErrors("categories");
       setCategoriesText(event.target.value);
     }
   };
 
   const onCategoriesKeyDown = (event: any) => {
-    clearErrors("categories");
+    clearErrors(["categories", "categories.0"]);
     if (event.code === "Space") {
       if (categoriesText !== "") {
         if (categories.includes(categoriesText)) {
-          setError("categories", { message: "already exist category" });
+          setError(`categories.0`, { message: "already exist category" });
           setCategoriesText("");
           return;
         }
-        clearErrors("categories");
         setCategories((prev) => [...prev, categoriesText]);
         setCategoriesText("");
       }
@@ -286,7 +291,7 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
       setTimeout(() => clearErrors("photos"), 2000);
       return;
     }
-    setValue("photos", files, { shouldValidate: true });
+    setValue("photos", [...files], { shouldValidate: true });
     setPreviews([]);
 
     [...files].forEach((file: any) => {
@@ -315,7 +320,7 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
         longitude,
         photos,
         categories,
-        ...(type === "edit" && id !== undefined && { id }),
+        ...(type === "edit" && { id }),
       },
     });
   };
@@ -369,11 +374,12 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
           autoComplete="off"
           hasError={errors.name?.message}
         />
+        <ErrorValidation term={errors.name?.message} />
         <Input
           {...register("latitude", {
             required: false,
             pattern: {
-              value: /^[-]?[0-9]+\.?[0-9]+$/,
+              value: /^[-]?[0-9]+(\.?[0-9]+)?$/,
               message: "please input type number",
             },
           })}
@@ -384,11 +390,12 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
           autoComplete="off"
           hasError={errors.latitude?.message}
         />
+        <ErrorValidation term={errors.latitude?.message} />
         <Input
           {...register("longitude", {
             required: false,
             pattern: {
-              value: /^[-]?[0-9]+\.?[0-9]+$/,
+              value: /^[-]?[0-9]+(\.?[0-9]+)?$/,
               message: "please input type number",
             },
           })}
@@ -399,10 +406,11 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
           autoComplete="off"
           hasError={errors.longitude?.message}
         />
+        <ErrorValidation term={errors.longitude?.message} />
         <CategoriesContainer hasError={errors.categories}>
           {categories.length > 0 &&
             categories.map((category: string, idx: number) => (
-              <CategoryPreview key={category + idx}>
+              <CategoryPreview key={category + idx + Date.now()}>
                 {category}
                 <CategoryDelete onClick={onDeleteCategory} tabIndex={-1}>
                   x
@@ -420,11 +428,14 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
             onKeyDown={onCategoriesKeyDown}
           />
         </CategoriesContainer>
+        <ErrorValidation term={errors.categories?.[0]?.message} />
         <SubmitBtn hasError={!isValid} text="Register" />
       </Form>
-      <DeleteContainer>
-        <DeleteShop onClick={onDeleteShop}>Delete</DeleteShop>
-      </DeleteContainer>
+      {history.location.pathname !== "/add" && (
+        <DeleteContainer>
+          <DeleteShop onClick={onDeleteShop}>Delete</DeleteShop>
+        </DeleteContainer>
+      )}
     </Container>
   );
 };

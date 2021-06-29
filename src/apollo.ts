@@ -4,12 +4,30 @@ import createUploadLink from "apollo-upload-client/public/createUploadLink";
 export const client: any = new ApolloClient({
   // uri: "http://localhost:4000/graphql",
   link: createUploadLink({
-    uri: "https://coffee-server-nomad.herokuapp.com/graphql",
+    uri: "http://localhost:4000/graphql",
     headers: {
       token: localStorage.getItem("token") || "",
     },
   }),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          seeCoffeeShops: {
+            keyArgs: false,
+            merge(existing, incoming) {
+              return {
+                ...incoming,
+                shops: existing
+                  ? [...existing?.shops, ...incoming?.shops]
+                  : incoming?.shops,
+              };
+            },
+          },
+        },
+      },
+    },
+  }),
 });
 
 export const isLoggedInVar = makeVar(false);
