@@ -14,7 +14,6 @@ const Container = styled.main`
 const ShopsContainer = styled.section`
   display: flex;
   flex-direction: column;
-  justify-items: center;
   align-items: center;
 `;
 
@@ -38,7 +37,8 @@ const Home: React.FC = () => {
         setPageNum((prev) => prev + 1);
       }
     }
-  }, [isReached, data?.seeCoffeeShops?.hasNext]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReached]);
 
   return (
     <Container>

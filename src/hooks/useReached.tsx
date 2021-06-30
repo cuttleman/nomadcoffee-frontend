@@ -14,9 +14,10 @@ const useReached = (options) => {
   useEffect(() => {
     const observer = new IntersectionObserver(callback, options);
     if (observedRef.current) observer.observe(observedRef.current);
-    // return () => {
-    //   if (observedRef.current) observer.unobserve(observedRef.current);
-    // };
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      if (observedRef.current) observer.unobserve(observedRef.current);
+    };
   }, [observedRef, options]);
 
   return { observedRef, isReached };

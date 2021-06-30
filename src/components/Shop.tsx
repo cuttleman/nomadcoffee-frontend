@@ -4,71 +4,62 @@ import styled from "styled-components";
 import { Api } from "types";
 
 const PhotoBg = styled.div`
+  position: absolute;
   width: 100%;
   height: 100%;
   background-color: ${(props) => props.theme.mainColor};
   opacity: 0;
-  border-radius: 50%;
 `;
 
 const Container = styled.div<{ ref: ForwardedRef<HTMLDivElement> | null }>`
-  width: 60%;
-  height: 300px;
-  position: relative;
+  width: 40%;
+  max-width: 600px;
+  min-width: 500px;
+  height: 60vh;
   cursor: pointer;
+  margin-bottom: 100px;
   &:not(:last-child) {
-    margin-bottom: 100px;
   }
   &:hover ${PhotoBg} {
     opacity: 0.5;
   }
 `;
 const Photo = styled.div<{ url: string }>`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  margin: auto 0;
-  width: 200px;
-  height: 200px;
+  position: relative;
   ${(props) => props.url && `background-image: url(${props.url});`};
+  height: 50%;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: contain;
   background-clip: border-box;
   background-origin: border-box;
   background-color: ${(props) => props.theme.defaultColor};
-  border-radius: 50%;
-  /* overflow: hidden; */
-  z-index: 2;
 `;
 
 const Content = styled.div`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  margin: auto;
-  width: 90%;
-  height: 100%;
+  width: 100%;
+  height: 50%;
+  padding: 30px;
   background-color: ${(props) => props.theme.shopCardColor};
-  border-radius: 20px;
-  z-index: 1;
 `;
 
 const ItemContainer = styled.div`
-  padding-left: 20%;
   width: 100%;
   height: 100%;
   display: flex;
+`;
+
+const ItemColumn = styled.div`
+  width: 50%;
+  display: flex;
   flex-direction: column;
-  justify-content: space-around;
 `;
 
 const Title = styled.span`
   font-size: 1.6rem;
   text-transform: uppercase;
   font-weight: 600;
+  margin-bottom: 30px;
 `;
 
 const Categories = styled.div``;
@@ -81,10 +72,11 @@ const Category = styled.span`
   font-weight: 500;
 `;
 
-const Map = styled.div`
-  width: 70%;
-  height: 40%;
+const GMap = styled.div`
+  width: 100%;
+  height: 100%;
   border-radius: 10px;
+  align-self: center;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -93,6 +85,7 @@ const Map = styled.div`
 
 const Shop = forwardRef<HTMLDivElement, Api.CoffeeShop>(
   ({ id, name, latitude, longitude, photos, categories }, ref) => {
+    console.log(photos[0]?.url);
     return (
       <Container ref={ref || null}>
         <Link to={`/shop/${id}`}>
@@ -101,14 +94,18 @@ const Shop = forwardRef<HTMLDivElement, Api.CoffeeShop>(
           </Photo>
           <Content>
             <ItemContainer>
-              <Title>{name}</Title>
-              <Categories>
-                {categories.length > 0 &&
-                  categories.map((category) => (
-                    <Category key={category.id}>{category.name}</Category>
-                  ))}
-              </Categories>
-              <Map>google map</Map>
+              <ItemColumn>
+                <Title>{name}</Title>
+                <Categories>
+                  {categories.length > 0 &&
+                    categories.map((category) => (
+                      <Category key={category.id}>{category.name}</Category>
+                    ))}
+                </Categories>
+              </ItemColumn>
+              <ItemColumn>
+                <GMap>google map</GMap>
+              </ItemColumn>
             </ItemContainer>
           </Content>
         </Link>

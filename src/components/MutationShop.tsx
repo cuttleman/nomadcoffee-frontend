@@ -155,6 +155,7 @@ const DeleteShop = styled.button`
   border-radius: 7px;
   font-size: 0.9rem;
   background-color: #e84118;
+  color: white;
   opacity: 1;
   &:active {
     opacity: 0.4;
@@ -218,6 +219,13 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
   const [deleteShopMutation] = useMutation(DELETE_COFFEE_SHOP, {
     onCompleted: onDeleteComplete,
     refetchQueries: [{ query: SEE_COFFEE_SHOPS, variables: { pageNum: 1 } }],
+    update: (cache) => {
+      cache.modify({
+        fields: {
+          seeCoffeeShops: () => null,
+        },
+      });
+    },
   });
 
   const [newShopMutation, { loading }] = useMutation(
@@ -225,6 +233,13 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
     {
       onCompleted,
       refetchQueries: [{ query: SEE_COFFEE_SHOPS, variables: { pageNum: 1 } }],
+      update: (cache) => {
+        cache.modify({
+          fields: {
+            seeCoffeeShops: () => null,
+          },
+        });
+      },
     }
   );
 
@@ -410,7 +425,7 @@ const MutationShop: React.FC<FCProps.MutationShop> = ({
         <CategoriesContainer hasError={errors.categories}>
           {categories.length > 0 &&
             categories.map((category: string, idx: number) => (
-              <CategoryPreview key={category + idx + Date.now()}>
+              <CategoryPreview key={category + idx}>
                 {category}
                 <CategoryDelete onClick={onDeleteCategory} tabIndex={-1}>
                   x

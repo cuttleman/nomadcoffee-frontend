@@ -52,7 +52,6 @@ export const SEE_COFFEE_SHOPS = gql`
         }
       }
       hasNext
-      pageNum
     }
   }
 `;
